@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.0</TargetFramework>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <ClientRoot>..\VueClient\</ClientRoot>
+        <ClientInstallCommand>yarn install</ClientInstallCommand>
+        <ClientBuildCommand>yarn buildStandaloneDev</ClientBuildCommand>
+        
+        <SkipExtraFilesOnServer>false</SkipExtraFilesOnServer>
+        <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck> <!--TODO: This should only be run conditionally in some 'build-client' config-->
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Folder Include="wwwroot" />
+    </ItemGroup>
+    
+    <Target Name="ClientBuild" BeforeTargets="BeforeBuild">
+        <Message Text="Executing $(ClientInstallCommand)" />
+        <Exec WorkingDirectory="$(ClientRoot)" Command="$(ClientInstallCommand)" />
+        <Message Text="Executing $(ClientBuildCommand)" />
+        <Exec WorkingDirectory="$(ClientRoot)" Command="$(ClientBuildCommand)" />
+        <Message Text="Done building client." />
+    </Target>
+
+</Project>
