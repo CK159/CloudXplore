@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Api.Modules.System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -38,6 +39,14 @@ namespace Api
 						builder.WithOrigins("http://localhost:8080");
 					});
 			});
+			
+			AddApiServices(services);
+		}
+
+		// All the custom services that make up the API layer
+		private void AddApiServices(IServiceCollection services)
+		{
+			services.AddSingleton(ApplicationInfo.BuildApplicationInfo());
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,8 +1,8 @@
 using System;
 
-namespace Api
+namespace Api.Modules.WeatherForecast
 {
-    public class WeatherForecast
+    public class WeatherForecastModel
     {
         public DateTime Date { get; set; }
 
