@@ -2,27 +2,36 @@
 
     <PropertyGroup>
         <TargetFramework>netcoreapp3.0</TargetFramework>
-    </PropertyGroup>
-
-    <PropertyGroup>
-        <ClientRoot>..\VueClient\</ClientRoot>
-        <ClientInstallCommand>yarn install</ClientInstallCommand>
-        <ClientBuildCommand>yarn buildStandaloneDev</ClientBuildCommand>
-        
-        <SkipExtraFilesOnServer>false</SkipExtraFilesOnServer>
-        <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck> <!--TODO: This should only be run conditionally in some 'build-client' config-->
+        <Configurations>Debug;Release;DebugWithoutClient;BuildClient</Configurations>
+        <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="wwwroot" />
+        <Folder Include="wwwroot" />
     </ItemGroup>
+
+    <PropertyGroup>
+        <SkipExtraFilesOnServer>false</SkipExtraFilesOnServer>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)'!='DebugWithoutClient'">
+        <!--Ensure client build commands are always run. It would be skipped if the backend is unchanged but the client needs to be built-->
+        <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
+    </PropertyGroup>
     
-    <Target Name="ClientBuild" BeforeTargets="BeforeBuild">
-        <Message Text="Executing $(ClientInstallCommand)" />
-        <Exec WorkingDirectory="$(ClientRoot)" Command="$(ClientInstallCommand)" />
-        <Message Text="Executing $(ClientBuildCommand)" />
-        <Exec WorkingDirectory="$(ClientRoot)" Command="$(ClientBuildCommand)" />
-        <Message Text="Done building client." />
+    <Target Name="ClientBuild" BeforeTargets="BeforeBuild" Condition="'$(Configuration)'!='DebugWithoutClient'">
+        <Message Importance="High" Text="Execute building Vue Client project" />
+        <MSBuild Projects="$(SolutionDir)VueClient\VueClient.csproj" Properties="Configuration=BuildClient;Platform=$(PlatformName);SolutionDir=$(SolutionDir);BuildProjectReferences=true" />
     </Target>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugWithoutClient|AnyCPU'">
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>full</DebugType>
+        <Optimize>false</Optimize>
+        <OutputPath>bin\</OutputPath>
+        <DefineConstants>DEBUG;TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
 
 </Project>

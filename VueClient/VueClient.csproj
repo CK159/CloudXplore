@@ -2,6 +2,28 @@
 
     <PropertyGroup>
         <TargetFramework>netcoreapp3.0</TargetFramework>
+        <Configurations>Debug;Release;BuildClient</Configurations>
     </PropertyGroup>
+
+    <PropertyGroup>
+        <ClientRoot>..\VueClient\</ClientRoot>
+        <ClientInstallCommand>yarn install</ClientInstallCommand>
+        <ClientBuildCommand>yarn buildStandaloneDev</ClientBuildCommand>
+
+        <SkipExtraFilesOnServer>false</SkipExtraFilesOnServer>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)'=='BuildClient'">
+        <!--Ensure client build commands are always run. It would be skipped if the backend is unchanged. Theres room for further optimization-->
+        <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
+    </PropertyGroup>
+
+    <Target Name="ClientBuild" BeforeTargets="BeforeBuild" Condition="'$(Configuration)'=='BuildClient'">
+        <Message Importance="High" Text="Executing $(ClientInstallCommand)" />
+        <Exec WorkingDirectory="$(ClientRoot)" Command="$(ClientInstallCommand)" />
+        <Message Importance="High" Text="Executing $(ClientBuildCommand)" />
+        <Exec WorkingDirectory="$(ClientRoot)" Command="$(ClientBuildCommand)" />
+        <Message Importance="High" Text="Done building client." />
+    </Target>
 
 </Project>
