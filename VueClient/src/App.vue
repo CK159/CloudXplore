@@ -9,7 +9,24 @@
 		<router-view/>
 		
 		<div id="footer">
-			{{footerLabel}}
+			Client: v{{footerVersion}} | {{footerLabel}} | Build {{footerAppBuildDate}}<br />
+			Server: 
+			<template v-if="applicationInfoStatus === 'loaded'">
+				v{{applicationInfo.applicationVersion}}
+				|
+				Built {{applicationInfo.applicationBuildDate}}
+				|
+				{{footerApiBase}}
+				|
+				<span title="Managed memory allocated by GC">{{applicationInfo.memory.gcAllocatedMemoryMb}}MB</span>
+				/ <span title="Process working set memory">{{applicationInfo.memory.processWorkingSetMemoryMb}}MB</span>
+			</template>
+			<template v-else>
+				<!--Always display the intended API URL even if it can't be contacted-->
+				{{footerApiBase}}
+			</template>
+			|
+			<a href="#" @click.prevent="fetchServerInfo">Refresh</a>
 		</div>
 	</div>
 </template>
@@ -19,9 +36,37 @@ export default {
 	name: 'app',
 	data: () => {
 		return {
-			footerLabel: process.env.VUE_APP_CONFIG_LABEL
+			footerLabel: process.env.VUE_APP_CONFIG_LABEL,
+			footerVersion: process.env.VUE_APP_VERSION,
+			footerAppBuildDate: process.env.VUE_APP_BUILD_DATE,
+			footerApiBase: process.env.VUE_APP_API_BASE,
+			applicationInfoStatus: "",
+			applicationInfo: {}
 		};
 	},
+	methods: {
+		fetchServerInfo() {
+			if (this.applicationInfoStatus === "loading") {
+				return;
+			}
+			
+			this.applicationInfoStatus = "loading";
+			
+			fetch(process.env.VUE_APP_API_BASE + "applicationInfo")
+				.then((response) => {
+					return response.json();
+				})
+				.then((data) => {
+					this.applicationInfo = data;
+				})
+				.finally(() => {
+					this.applicationInfoStatus = "loaded";
+				});
+		}
+	},
+	created() {
+		this.fetchServerInfo();
+	}
 }
 </script>
 

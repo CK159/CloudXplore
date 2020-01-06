@@ -4,6 +4,8 @@
         <TargetFramework>netcoreapp3.0</TargetFramework>
         <Configurations>Debug;Release;DebugWithoutClient;BuildClient</Configurations>
         <Platforms>AnyCPU</Platforms>
+        <LangVersion>latest</LangVersion>
+        <Version>0.1.1-dev</Version>
     </PropertyGroup>
 
     <ItemGroup>
