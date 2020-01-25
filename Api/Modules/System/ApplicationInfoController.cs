@@ -32,7 +32,6 @@ namespace Api.Modules.System
 				Memory = GetInternalMemoryStats()
 			};
 
-
 			return model;
 		}
 		

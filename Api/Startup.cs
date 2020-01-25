@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Net.Http.Headers;
 
 namespace Api
 {
@@ -36,7 +37,8 @@ namespace Api
 				options.AddPolicy("app-cors-policy",
 					builder =>
 					{
-						builder.WithOrigins("http://localhost:8080");
+						builder.WithOrigins("http://localhost:8080")
+							.WithHeaders(HeaderNames.ContentType);
 					});
 			});
 			

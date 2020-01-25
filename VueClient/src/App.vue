@@ -9,31 +9,19 @@
 		<router-view/>
 		
 		<div id="footer">
-			Client: v{{footerVersion}} | {{footerLabel}} | Build {{footerAppBuildDate}}<br />
-			Server: 
-			<template v-if="applicationInfoStatus === 'loaded'">
-				v{{applicationInfo.applicationVersion}}
-				|
-				Built {{applicationInfo.applicationBuildDate}}
-				|
-				{{footerApiBase}}
-				|
-				<span title="Managed memory allocated by GC">{{applicationInfo.memory.gcAllocatedMemoryMb}}MB</span>
-				/ <span title="Process working set memory">{{applicationInfo.memory.processWorkingSetMemoryMb}}MB</span>
-			</template>
-			<template v-else>
-				<!--Always display the intended API URL even if it can't be contacted-->
-				{{footerApiBase}}
-			</template>
-			|
-			<a href="#" @click.prevent="fetchServerInfo">Refresh</a>
+			<app-status />
 		</div>
 	</div>
 </template>
 
 <script>
+import AppStatus from "./components/AppStatus";
+	
 export default {
-	name: 'app',
+	name: "app",
+	components: {
+		AppStatus
+	},
 	data: () => {
 		return {
 			footerLabel: process.env.VUE_APP_CONFIG_LABEL,
@@ -58,9 +46,9 @@ export default {
 				})
 				.then((data) => {
 					this.applicationInfo = data;
+					this.applicationInfoStatus = "loaded";
 				})
 				.finally(() => {
-					this.applicationInfoStatus = "loaded";
 				});
 		}
 	},
@@ -71,12 +59,21 @@ export default {
 </script>
 
 <style>
+	html, body {
+		box-sizing: border-box;
+		height: 100%;
+		margin: 0;
+	}
+	
 	#app {
 		font-family: 'Avenir', Helvetica, Arial, sans-serif;
-		-webkit-font-smoothing: antialiased;
-		-moz-osx-font-smoothing: grayscale;
 		text-align: center;
 		color: #2c3e50;
+		
+		/*	Sticky footer */
+		min-height: 100%;
+		display: grid;
+		grid-template-rows: auto 1fr auto; /* 3-column layout - if adding more child elements to #app then add more 'auto's */
 	}
 	
 	#nav {
@@ -95,5 +92,6 @@ export default {
 	#footer {
 		text-align: right;
 		color: #777;
+		padding: 10px 15px;
 	}
 </style>
