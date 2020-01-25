@@ -18,7 +18,8 @@
 		</template>
 		|
 		<a href="#" @click.prevent="fetchServerInfo">Refresh</a>
-	</div>	
+		| <a href="#" @click.prevent="runGc">GC</a>
+	</div>
 </template>
 
 <script>
@@ -51,6 +52,15 @@ export default {
 				})
 				.catch(e => {
 					this.applicationInfoStatus = "error"
+				});
+		},
+		runGc() {
+			api.post("applicationInfo/runGc")
+				.then(data => {
+					alert("Memory reclaimed:\n\n"
+						+ parseFloat(data.reclaimedMemory.gcAllocatedMemoryMb).toFixed(2)
+						+ "MB / "
+						+ parseFloat(data.reclaimedMemory.processWorkingSetMemoryMb).toFixed(2) + "MB");
 				});
 		},
 		buildDateFormat(date) {
